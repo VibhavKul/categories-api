@@ -3,14 +3,12 @@ require('dotenv').config();
 const express = require('express');
 const bodyParser = require('body-parser');
 const sql = require('mssql');
-// const cors = require('cors');
+const https = require('https');
+const fs = require('fs');
+const path = require('path');
 
 const app = express();
-// app.use(cors({
-//     origin: 'https://white-tree-0341fea03.5.azurestaticapps.net/'
-//   }));
-
-const port = process.env.PORT || 5000;
+const port = process.env.PORT || 3000;
 
 // Middleware
 app.use(bodyParser.json());
@@ -22,7 +20,7 @@ const dbConfig = {
     server: process.env.DB_SERVER,
     database: process.env.DB_NAME,
     options: {
-        encrypt: true
+        encrypt: true // Use this if you're on Windows Azure
     }
 };
 
@@ -40,11 +38,7 @@ app.get('/', (req, res) => {
     res.send('API is running');
 });
 
-// Start server
-app.listen(port, () => {
-    console.log(`Server is running on port ${port}`);
-});
-
+// Categories and Products endpoints (as previously defined)
 // Get all categories
 app.get('/api/categories', async (req, res) => {
     try {
@@ -106,5 +100,16 @@ app.post('/api/products', async (req, res) => {
     } catch (err) {
         res.status(500).send(err.message);
     }
+});
+
+// Load SSL/TLS certificates
+const sslOptions = {
+    key: fs.readFileSync(path.join(__dirname, 'key.pem')),
+    cert: fs.readFileSync(path.join(__dirname, 'cert.pem'))
+};
+
+// Start HTTPS server
+https.createServer(sslOptions, app).listen(port, () => {
+    console.log(`Server is running on https://localhost:${port}`);
 });
 
