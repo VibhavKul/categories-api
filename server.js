@@ -3,8 +3,13 @@ require('dotenv').config();
 const express = require('express');
 const bodyParser = require('body-parser');
 const sql = require('mssql');
+// const cors = require('cors');
 
 const app = express();
+// app.use(cors({
+//     origin: 'https://white-tree-0341fea03.5.azurestaticapps.net/'
+//   }));
+
 const port = process.env.PORT || 5000;
 
 // Middleware
