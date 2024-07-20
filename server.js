@@ -1,6 +1,7 @@
 require('dotenv').config();
 
 const express = require('express');
+const cors = require('cors');
 const bodyParser = require('body-parser');
 const sql = require('mssql');
 const https = require('https');
@@ -8,6 +9,7 @@ const fs = require('fs');
 const path = require('path');
 
 const app = express();
+app.use(cors());
 const port = process.env.PORT || 3000;
 
 // Middleware
@@ -44,6 +46,15 @@ app.get('/api/categories', async (req, res) => {
     try {
         const request = new sql.Request();
         const result = await request.query('SELECT * FROM Categories');
+        res.json(result.recordset);
+    } catch (err) {
+        res.status(500).send(err.message);
+    }
+});
+app.get('/api/products', async (req, res) => {
+    try {
+        const request = new sql.Request();
+        const result = await request.query('SELECT * FROM Products');
         res.json(result.recordset);
     } catch (err) {
         res.status(500).send(err.message);
